@@ -1,0 +1,44 @@
+import openai
+
+# ChatGPT API anahtarı girilecek
+openai.api_key = 'API_ANAHTARI'
+
+def get_movie_recommendations(genres, favorite_movies):
+    prompt = f"""
+    Benimle şu türlerde film önerilerini paylaşır mısın: {', '.join(genres)}.
+    Ayrıca, sevdiğim filmler: {', '.join(favorite_movies)}. 
+    Bana bu türlerdeki ve sevdiğim filmlere benzer öneriler ver. 
+    Önerileri tablo formatında ve her film için filmin adı, türü ve kısa özeti şeklinde yaz.
+    """
+
+    response = openai.Completion.create(
+        engine="text-davinci-003",
+        prompt=prompt,
+        max_tokens=150,
+        temperature=0.5
+    )
+
+    return response.choices[0].text.strip()
+
+def main():
+    print("Film Türleri:")
+    genres = ['Aksiyon', 'Komedi', 'Drama', 'Bilim Kurgu', 'Korku']
+    selected_genres = []
+
+    for genre in genres:
+        answer = input(f"{genre} (E/H): ").strip().lower()
+        if answer == 'e':
+            selected_genres.append(genre)
+
+    favorite_movies = []
+    print("\nEn Sevdiğiniz 3 Film:")
+    for i in range(1, 4):
+        movie = input(f"{i}. Film: ").strip()
+        favorite_movies.append(movie)
+
+    print("\nÖnerilen Filmler:")
+    recommendations = get_movie_recommendations(selected_genres, favorite_movies)
+    print(recommendations)
+
+if __name__ == "__main__":
+    main()
