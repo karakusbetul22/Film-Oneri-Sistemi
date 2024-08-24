@@ -1,0 +1,45 @@
+import streamlit as st
+import openai
+
+# ChatGPT API anahtarı 
+openai.api_key = 'API_ANAHTARI'
+
+def get_movie_recommendations(genres, favorite_movies):
+    prompt = f"""
+    Benimle şu türlerde film önerilerini paylaşır mısın: {', '.join(genres)}.
+    Ayrıca, sevdiğim filmler: {', '.join(favorite_movies)}. 
+    Bana bu türlerdeki ve sevdiğim filmlere benzer öneriler ver. 
+    Önerileri tablo formatında ve her film için filmin adı, türü ve kısa özeti şeklinde yaz.
+    """
+
+    response = openai.Completion.create(
+        engine="text-davinci-003",
+        prompt=prompt,
+        max_tokens=150,
+        temperature=0.5
+    )
+
+    return response.choices[0].text.strip()
+
+st.title("Film Öneri Sistemi")
+st.write("Nasıl Çalışır?")
+st.write("📝 Sevdiğiniz film türlerini seçin")
+st.write("📝 En sevdiğiniz 3 filmi belirtin")
+st.write("📝 Bilgileri gönderin")
+st.write("📝 Size özel film önerileri alın!")
+
+genres = st.multiselect(
+    "Film Türleri",
+    ['Aksiyon', 'Komedi', 'Drama', 'Bilim Kurgu', 'Korku']
+)
+
+favorite_movies = [
+    st.text_input("1. Film"),
+    st.text_input("2. Film"),
+    st.text_input("3. Film")
+]
+
+if st.button("Öneriler Al"):
+    recommendations = get_movie_recommendations(genres, favorite_movies)
+    st.write("Önerilen Filmler:")
+    st.write(recommendations)
